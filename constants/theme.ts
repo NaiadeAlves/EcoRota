@@ -18,16 +18,18 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     button: '#EC4E1F',
     border: '#EC4E1F',
+    border2: '#EC4E1F'
   },
   dark: {
     text: '#ECEDEE',
-    background: '#292b2cff',
+    background: '#1c1e1fff',
     tint: tintColorDark,
     icon: '#ECEDEE',
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
-    button: '#EC4E1F',
-    border: '#EC4E1F',
+    button: '#1d4327ff',
+    border: '#1d4327ff',
+    border2: '#1d4327ff'
   },
 };
 
