@@ -159,6 +159,7 @@ const styles = StyleSheet.create({
   },
   profile: {
     marginTop: 30,
+    marginBottom: 30,
     width: 100,
     height: 100,
     borderWidth: 2,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     height: 50,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 15,

@@ -39,7 +39,8 @@ export default function RecyclableCard({ title, description, image, backgroundCo
 
       {expanded && (
         <View style={styles.cardContent}>
-          <Text style={{ color: Colors[colorScheme].text }}>{description}</Text>
+          <Text style={[styles.cardDescription, { color: Colors[colorScheme].text }]}>
+      {description}</Text>
         </View>
       )}
     </View>
@@ -48,7 +49,7 @@ export default function RecyclableCard({ title, description, image, backgroundCo
 
 const styles = StyleSheet.create({
   card: {
-    width: 380,
+    width: 360,
     borderWidth: 2,
     borderRadius: 10,
     padding: 15,
@@ -67,6 +68,10 @@ const styles = StyleSheet.create({
   cardContent: {
     marginTop: 10,
   },
+  cardDescription: {
+  fontSize: 16,
+  textAlign: "center",
+},
   materials: {
     width: 80,
     height: 80,

@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
         paddingTop: 40,
         paddingBottom: 10,
         alignItems: "center",
+        borderBottomLeftRadius: 15,
+        borderBottomRightRadius: 15,
     },
     logo: {
         width: 120,
