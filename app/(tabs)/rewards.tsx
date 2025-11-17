@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -8,9 +8,12 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  Image
 } from "react-native";
 import { Colors } from "../../constants/theme";
 import Header from "@/components/header";
+import * as ImagePicker from "expo-image-picker";
+import * as Location from "expo-location";
 
 const Reward = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -40,6 +43,67 @@ const Reward = () => {
     );
   };
 
+    // ------ ENVIAR RECICLAGEM ------
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [itemName, setItemName] = useState("");
+  const [description, setDescription] = useState("");
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  // Pega localização
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Erro", "Permita o acesso à localização.");
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync({});
+      setLocation({
+        lat: loc.coords.latitude,
+        lng: loc.coords.longitude,
+      });
+    })();
+  }, []);
+
+  // Tirar foto com a câmera
+  const handleTakePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (status !== "granted") {
+      Alert.alert("⚠️", "Permita o uso da câmera.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  };
+
+  // Enviar dados
+  const handleSendRecycling = () => {
+    if (!photo || !itemName.trim() || !description.trim()) {
+      Alert.alert("⚠️", "Preencha tudo e tire uma foto.");
+      return;
+    }
+
+    Alert.alert(
+      "Enviado! ♻️",
+      `Item: ${itemName}\nLocal: ${location?.lat.toFixed(
+        4
+      )}, ${location?.lng.toFixed(4)}\nSua solicitação está em análise.`
+    );
+
+    // limpar
+    setPhoto(null);
+    setItemName("");
+    setDescription("");
+  };
+
   return (
     <ScrollView
       style={{ backgroundColor: Colors[colorScheme].background }}
@@ -53,6 +117,65 @@ const Reward = () => {
           Recompensas
         </Text>
       </View>
+
+      {/* ENVIAR RECICLAGEM */}
+      <View style={styles.recycleBox}>
+        <Text style={[styles.sectionTitle, { color: Colors[colorScheme].text }]}>
+          Enviar Reciclagem ♻️
+        </Text>
+
+        {/* Foto */}
+        <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+          <Text style={styles.photoButtonText}>
+            {photo ? "Trocar Foto" : "Adicionar Foto"}
+          </Text>
+        </TouchableOpacity>
+
+        {photo && (
+          <Image source={{ uri: photo }} style={styles.previewImage} />
+        )}
+
+        {/* Nome do item */}
+        <TextInput
+          style={[
+            styles.input,
+            {
+              borderColor: Colors[colorScheme].border2,
+              color: Colors[colorScheme].text,
+            },
+          ]}
+          placeholder="Nome do item (Ex: Garrafa PET)"
+          placeholderTextColor="#aaa"
+          value={itemName}
+          onChangeText={setItemName}
+        />
+
+        {/* Descrição */}
+        <TextInput
+          style={[
+            styles.textArea,
+            {
+              borderColor: Colors[colorScheme].border2,
+              color: Colors[colorScheme].text,
+            },
+          ]}
+          placeholder="Descrição"
+          placeholderTextColor="#aaa"
+          multiline
+          value={description}
+          onChangeText={setDescription}
+        />
+
+        {/* Enviar */}
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: Colors[colorScheme].button }]}
+          onPress={handleSendRecycling}
+        >
+          <Text style={styles.buttonText}>Enviar para Análise</Text>
+        </TouchableOpacity>
+      </View>
+
+      
 
       {/* Card de Pontos */}
       <View
@@ -196,6 +319,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     
   },
+  textArea: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    padding: 12,
+    height: 100,
+    marginBottom: 15,
+    textAlignVertical: "top",
+    fontSize: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: "600",
@@ -204,6 +336,33 @@ const styles = StyleSheet.create({
   historyItem: {
     fontSize: 14,
     marginBottom: 5,
+  },
+
+  recycleBox: {
+    width: "90%",
+    alignSelf: "center",
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    marginBottom: 25,
+  },
+  photoButton: {
+    backgroundColor: "#4CAF50",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  photoButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  previewImage: {
+    width: "100%",
+    height: 180,
+    borderRadius: 10,
+    marginBottom: 15,
   },
 });
 

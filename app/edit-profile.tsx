@@ -68,6 +68,16 @@ const EditProfile = () => {
             resizeMode="contain"
           />
 
+          <Pressable
+            style={[
+              styles.changePhotoButton,
+              { backgroundColor: Colors[colorScheme].button },
+            ]}
+            onPress={() => console.log("Alterar foto")}
+          >
+            <Text style={styles.changePhotoText}>Mudar foto</Text>
+          </Pressable>
+
           <SafeAreaView style={styles.inputContainer}>
             <TextInput
               style={[
@@ -128,14 +138,15 @@ const EditProfile = () => {
           <View style={styles.pContain}></View>
 
           {/*botão que redireciona para a tela principal*/}
-          <View style={styles.button}>
-            <Button
-              title="Salvar"
-              onPress={() => {
-                router.push("/(tabs)");
-              }}
-              color={Colors[colorScheme].button}
-            />
+          <View>
+            <Pressable
+              style={[
+                styles.saveButton,
+                { backgroundColor: Colors[colorScheme].button },
+              ]}
+            >
+              <Text style={styles.saveText}>Salvar</Text>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
@@ -165,9 +176,20 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 50,
   },
-  button: {
+    saveButton: {
+    width: "150%",
+    alignItems: "center",
+    padding: 10,
     marginTop: 15,
+    borderRadius: 10,
+    overflow: "hidden",
+    alignSelf: "center",
   },
+  saveText: {
+    color: "#fff",
+    fontSize: 18,
+  },
+
   pContain: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -181,6 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 15,
+    fontSize: 18,
   },
   inputContainer: {
     width: "80%",
@@ -200,6 +223,21 @@ const styles = StyleSheet.create({
     position: "relative",
     justifyContent: "center",
     width: "100%",
+  },
+
+  changePhotoButton: {
+  width: "30%",
+  alignItems: "center",
+  padding: 8,
+  borderRadius: 10,
+  overflow: "hidden",
+  alignSelf: "center",
+  marginBottom: 20,
+  marginTop: -10,
+},
+  changePhotoText: {
+    color: "#fff",
+    fontSize: 16,
   },
 });
 

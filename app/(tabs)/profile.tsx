@@ -7,6 +7,7 @@ import {
   StyleSheet,
   useColorScheme,
   ScrollView,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -59,12 +60,14 @@ const Profile: React.FC = () => {
     <SafeAreaView
       style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}
     >
-      <Header />
+      
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ alignItems: "center", paddingBottom: 50 }}
+        contentContainerStyle={{ paddingBottom: 50 }}
       >
+        <Header />
         {/* Foto de perfil */}
+        <View style={{ alignItems: "center", width: "100%" }}>
         <Image
           source={require("../../assets/images/profile-test.png")}
           style={[styles.profile, { borderColor: Colors[colorScheme].border }]}
@@ -101,23 +104,27 @@ const Profile: React.FC = () => {
             {userData.email}
           </Text>
 
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Editar Perfil"
+          <View>
+            <Pressable
+              style={[
+                styles.editButton,
+                { backgroundColor: Colors[colorScheme].button },
+              ]}
               onPress={() => router.push("/edit-profile")}
-              color={Colors[colorScheme].button}
-            />
+            >
+              <Text style={styles.editText}>Editar Perfil</Text>
+            </Pressable>
           </View>
           <View style={styles.logoutButton}>
-          <Button
-            title="Sair"
-            onPress={() => {
-              // se futuramente quiser limpar o login salvo, é aqui:
-              // await AsyncStorage.removeItem("userToken");
-              router.replace("/login");
-            }}
-            color={colorScheme === "dark" ? "#C41A1A" : "#A62828"}
-          />
+          <Pressable
+            style={[
+              styles.logoutButton,
+              { backgroundColor: colorScheme === "dark" ? "#570202ff" : "#700505ff" },
+            ]}
+            onPress={() => router.replace("/login")}
+          >
+            <Text style={styles.logoutText}>Sair</Text>
+          </Pressable>
           </View>
         </View>
 
@@ -133,6 +140,7 @@ const Profile: React.FC = () => {
           */}
           
           <View style={[styles.RelatorioBox, { backgroundColor: Colors[colorScheme].backgroundCard }]}>
+          
           <PieChart
             data={recycleData}
             width={screenWidth - 40}
@@ -150,6 +158,7 @@ const Profile: React.FC = () => {
             absolute
           />
           
+          
           <View style={styles.summary}>
             <Text style={[styles.total, { color: Colors[colorScheme].text }]}>
               Total reciclado: <Text style={{ fontWeight: "bold" }}>82 itens</Text>
@@ -159,6 +168,7 @@ const Profile: React.FC = () => {
           <Text style={[styles.motivation, { color: Colors[colorScheme].text }]}>
               🌎 Continue contribuindo para um planeta mais limpo!
             </Text>
+        </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -181,20 +191,20 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: 15,
     
+    
   },
   infoBox: {
    width: "90%",
   borderRadius: 12,
   padding: 20,
   marginTop: 15,
-
-  // sombra cross-platform
   shadowColor: "#000",
   shadowOpacity: 0.15,
   shadowOffset: { width: 0, height: 2 },
   shadowRadius: 6,
   elevation: 4,
   },
+
   RelatorioBox: {
     width: "100%",
     borderRadius: 12,
@@ -219,8 +229,18 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 15,
   },
-  buttonContainer: {
-    marginTop: 10,
+    editButton: {
+    width: "100%",
+    alignItems: "center",
+    padding: 5,
+    marginTop: 3,
+    borderRadius: 10,
+    overflow: "hidden",
+    alignSelf: "center",
+  },
+  editText: {
+    color: "#fff",
+    fontSize: 18,
   },
   reportContainer: {
     marginTop: 30,
@@ -253,9 +273,18 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   logoutButton: {
-  marginTop: 10,
-  borderRadius: 8,
-  overflow: "hidden",
+    width: "100%",
+    alignItems: "center",
+    padding:5,
+    marginTop: 3,
+    borderRadius: 10,
+    overflow: "hidden",
+    alignSelf: "center",
+},
+logoutText: {
+  color: "#fff",
+  fontSize: 18,
+ 
 },
 });
 

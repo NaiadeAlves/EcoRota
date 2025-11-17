@@ -19,8 +19,7 @@ const Register = () => {
         style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}
         >
         
-        {/*impede que o conteúdo da tela suba ao ser clicado*/}
-        <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+        
         <Header/>
 
         <View style={styles.content}>
@@ -81,15 +80,16 @@ const Register = () => {
                 color={Colors[colorScheme].button}
              />
              </View>
-             
-        </View>
-            <Image
+             <Image
                 source={
                 require ('../assets/images/arte-principal2.png')}
                 style = {styles.photo}
                 resizeMode="contain"
             />
-        </ScrollView>
+             
+        </View>
+            
+        
         </KeyboardAvoidingView>
     )
 };
@@ -99,35 +99,36 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    marginTop: 20,
-    justifyContent: "center",
+    flex: 1,
+    justifyContent: "flex-start",
     alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 5,
+    marginTop: 30,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    position: "relative",
-    justifyContent: "center",
-    width: "100%",
-  },
-  backButton: {
-    padding: 5,
-    borderWidth: 1,
-    borderRadius: 20,
-    position: "absolute",
-    left: 40,
-  },
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between", // deixa o botão à esquerda e o título centralizado visualmente
+  width: "80%", // mesma largura dos inputs
+  marginBottom: 30,
+},
+backButton: {
+  padding: 5,
+  borderWidth: 1,
+  borderRadius: 20,
+},
+title: {
+  fontSize: 24,
+  textAlign: "center",
+  flex: 1, // garante centralização do texto
+},
   button: {
     marginTop: 15,
   },
   photo: {
     width: 383,
-    height: 329,
-    alignSelf: "center"
+    height: 300,
+    alignSelf: "center",
+    marginTop: -20,
   },
   input: {
     width: "100%",

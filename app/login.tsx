@@ -17,14 +17,14 @@ const Login = () => {
         style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}
         >
         
-        {/*impede que o conteúdo da tela suba ao ser clicado*/}
-        <ScrollView contentContainerStyle={{ flexGrow: 1}}>
+        
+        
         <Header/>
 
         <View style={styles.content}>
             <Text style={[styles.title, { color: Colors[colorScheme].text }]}>Login</Text>
 
-                <SafeAreaView style = {styles.inputContainer}>
+                <View style = {styles.inputContainer}>
                     <TextInput
                     style={[styles.input, { color: Colors[colorScheme].text, borderColor: Colors[colorScheme].border,}]}
                     onChangeText={setEmail}
@@ -40,7 +40,7 @@ const Login = () => {
                     placeholderTextColor={Colors[colorScheme].text}
                     secureTextEntry = {true}
                     />
-                </SafeAreaView>
+                </View>
 
             <View style = {styles.pContain}>
             <View style = {styles.checkboxContainer}>
@@ -88,7 +88,7 @@ const Login = () => {
                 style = {styles.photo}
                 resizeMode="contain"
             />
-        </ScrollView>
+       
         </KeyboardAvoidingView>
     )
 };
@@ -96,15 +96,17 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "space-between",
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
+    marginTop: 40,
   },
   title: {
     fontSize: 24,
-    marginBottom: 5,
+    marginBottom: 30,
   },
   button: {
     marginTop: 15,
@@ -119,13 +121,12 @@ const styles = StyleSheet.create({
   photo: {
     width: 383,
     height: 329,
-    marginTop: 20,
     alignSelf: "center"
   },
   input: {
     width: "100%",
     height: 50,
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 15,
