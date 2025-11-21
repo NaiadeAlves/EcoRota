@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -15,15 +15,53 @@ import { Colors } from "../../constants/theme";
 import Header from "../../components/header";
 import { PieChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from "../contexts/UserContext";
+
 
 const screenWidth = Dimensions.get("window").width;
 
 const Profile: React.FC = () => {
-  const colorScheme = useColorScheme() as "light" | "dark";
-  const [userData] = useState({
-    name: "Maria",
-    email: "maria123@gmail.com",
-  });
+  const colorScheme = useColorScheme() as "light" | "dark";
+  
+  // ⬅️ ATUALIZADO: Inicializa os estados com valores vazios/padrão
+  const [userData, setUserData] = useState({
+    name: "Carregando...",
+    email: "carregando@exemplo.com",
+  });
+const { user, setUser } = useUser();
+
+  // 🔑 NOVO: Hook para carregar os dados do usuário ao montar o componente
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Busca o nome e o email que foram salvos no Login.js
+        const storedName = await AsyncStorage.getItem('userName');
+        const storedEmail = await AsyncStorage.getItem('userEmail');
+
+        // Atualiza o estado se os dados forem encontrados
+        setUserData({
+          name: storedName || "Nome Não Encontrado", 
+          email: storedEmail || "Email Não Encontrado",
+        });
+        
+        // Log para debug
+        console.log("Perfil: Dados do usuário carregados:", { 
+            name: storedName, 
+            email: storedEmail 
+        });
+
+      } catch (e) {
+        console.error("Erro ao carregar dados do usuário no perfil:", e);
+        setUserData({ 
+            name: "Erro ao Carregar", 
+            email: "erro@carregar.com" 
+        });
+      }
+    };
+
+    loadUserData();
+  }, []); // Executa apenas uma vez ao montar
 
   const recycleData = [
     {
@@ -69,9 +107,15 @@ const Profile: React.FC = () => {
         {/* Foto de perfil */}
         <View style={{ alignItems: "center", width: "100%" }}>
         <Image
-          source={require("../../assets/images/profile-test.png")}
-          style={[styles.profile, { borderColor: Colors[colorScheme].border }]}
-          resizeMode="contain"
+          source={
+            user.profilePhoto
+              ? { uri: user.profilePhoto }
+              : require("../../assets/images/profile-test.jpg")
+          }
+          style={[
+            styles.profile,
+            { borderColor: Colors[colorScheme].border }
+          ]}
         />
 
         {/* Nome e email */}
@@ -104,7 +148,7 @@ const Profile: React.FC = () => {
             {userData.email}
           </Text>
 
-          <View>
+         
             <Pressable
               style={[
                 styles.editButton,
@@ -114,18 +158,41 @@ const Profile: React.FC = () => {
             >
               <Text style={styles.editText}>Editar Perfil</Text>
             </Pressable>
-          </View>
-          <View style={styles.logoutButton}>
+          
+          
           <Pressable
-            style={[
-              styles.logoutButton,
-              { backgroundColor: colorScheme === "dark" ? "#570202ff" : "#700505ff" },
-            ]}
-            onPress={() => router.replace("/login")}
-          >
-            <Text style={styles.logoutText}>Sair</Text>
-          </Pressable>
-          </View>
+          style={[
+            styles.logoutButton,
+            {
+              backgroundColor: colorScheme === "dark" ? "#570202ff" : "#700505ff",
+            },
+          ]}
+          onPress={async () => {
+            try {
+              await AsyncStorage.removeItem("userToken");
+              await AsyncStorage.removeItem("userName");
+              await AsyncStorage.removeItem("userEmail");
+              
+              // 🔹 Limpa o contexto do usuário
+              setUser({
+                id: null,
+                name: null,
+                email: null,
+                profilePhoto: null
+              });
+
+              console.log("Logout realizado com sucesso.");
+              router.replace("/login");
+            } catch (e) {
+              console.error("Erro ao fazer logout:", e);
+            }
+          }}
+
+        >
+          <Text style={styles.logoutText}>Sair</Text>
+        </Pressable>
+
+          
         </View>
 
         {/* Relatório */}
@@ -190,8 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "600",
     marginTop: 15,
-    
-    
+     
   },
   infoBox: {
    width: "90%",
@@ -236,8 +302,22 @@ const styles = StyleSheet.create({
     marginTop: 3,
     borderRadius: 10,
     overflow: "hidden",
-    alignSelf: "center",
   },
+
+  logoutButton: {
+  width: "100%",
+  alignItems: "center",
+  justifyContent: "center",
+  paddingVertical: 5,
+  marginTop: 10,
+  borderRadius: 10,
+},
+logoutText: {
+  color: "#fff",
+  fontSize: 18,
+},
+
+
   editText: {
     color: "#fff",
     fontSize: 18,
@@ -272,20 +352,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     opacity: 0.8,
   },
-  logoutButton: {
-    width: "100%",
-    alignItems: "center",
-    padding:5,
-    marginTop: 3,
-    borderRadius: 10,
-    overflow: "hidden",
-    alignSelf: "center",
-},
-logoutText: {
-  color: "#fff",
-  fontSize: 18,
- 
-},
+
 });
 
 export default Profile;

@@ -5,14 +5,47 @@ import { Colors } from "../constants/theme";
 import Header from "../components/header"
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import axios from "axios";
 
+const BACKEND_URL = "http://192.168.3.61:5000";
 
 const Register = () => {
-    const colorScheme = useColorScheme() as "light" | "dark";
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+  const colorScheme = useColorScheme() as "light" | "dark";
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const handleRegister = async () => {
+    setErrorMessage("");
+    if (password !== confirmPassword) {
+      setErrorMessage("As senhas não coincidem!");
+      return;
+    }
+
+     // ⬅️ LOG DE VERIFICAÇÃO: Confirma o nome que será enviado
+    console.log("Tentando cadastrar usuário. Nome enviado:", name);
+
+    try {
+      const res = await axios.post(`${BACKEND_URL}/api/users/register`, {
+        name, // Nome está sendo enviado
+        email,
+        password,
+      });
+
+
+      // Substituímos o alert() por uma navegação direta
+      console.log("Usuário cadastrado com sucesso! Retorno:", res.data);
+      router.push("/login"); // volta para a tela de login
+    } catch (err: any) {
+      const message = err.response?.data?.message || err.message || "Erro desconhecido ao cadastrar.";
+      console.error("Erro ao cadastrar:", message);
+      setErrorMessage(message);
+    }
+  };
+
     return (
         //ajusta a altura com base no teclado virtual
         <KeyboardAvoidingView 
@@ -76,9 +109,10 @@ const Register = () => {
             {/*botão que cadastra o usuário*/}
             <View style = {styles.button}>
              <Button
-                title = "Cadastrar"
+                title="Cadastrar"
                 color={Colors[colorScheme].button}
-             />
+                onPress={handleRegister}
+              />
              </View>
              <Image
                 source={

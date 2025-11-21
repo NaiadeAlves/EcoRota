@@ -13,7 +13,6 @@ import {
 import { Colors } from "../../constants/theme";
 import Header from "@/components/header";
 import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
 
 const Reward = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -49,22 +48,6 @@ const Reward = () => {
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
 
-  // Pega localização
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Erro", "Permita o acesso à localização.");
-        return;
-      }
-
-      let loc = await Location.getCurrentPositionAsync({});
-      setLocation({
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
-      });
-    })();
-  }, []);
 
   // Tirar foto com a câmera
   const handleTakePhoto = async () => {

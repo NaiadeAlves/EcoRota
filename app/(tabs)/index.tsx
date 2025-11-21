@@ -1,33 +1,65 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, useColorScheme, Image, Pressable,ScrollView } from 'react-native';
 import Header from "../../components/header";
 import { Colors } from '../../constants/theme'; 
 import RecyclableCard from "../../components/recycle-card";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
+import { useUser } from "../contexts/UserContext";
+
 
 const Home = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
+  const [userName, setUserName] = useState("Usuário");
+  const { user } = useUser();
+
+useFocusEffect(
+  useCallback(() => {
+    const loadUserName = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem('userName');
+        if (storedName) {
+          const firstName = storedName.trim().split(' ')[0];
+          setUserName(firstName);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar nome do usuário:", e);
+      }
+    };
+
+    setTimeout(() => {
+  loadUserName();
+}, 200);
+
+  }, [])
+);
+
 
   return (
     <ScrollView style={{ backgroundColor: Colors[colorScheme].background }}>
       <Header />
-
+      
       <View style={[styles.containerWelcome, { backgroundColor: Colors[colorScheme].background  }]}>
         <View>
           <Text style={[styles.welcomeText, { color: Colors[colorScheme].text }]}>
-            👋 Bem-vinda,
+            👋 Bem-vindo(a),
           </Text>
           <Text style={[styles.userName, { color: Colors[colorScheme].text }]}>
-            Maria
-          </Text>
+        {user?.name ? user.name.split(" ")[0] : "Usuário"}
+          </Text>
         </View>
         <Image
-          source={require('../../assets/images/profile-test.png')}
-          style={[
-            styles.profile,
-            { borderColor: Colors[colorScheme].tint },
-          ]}
-          resizeMode="cover"
-        />
+                  source={
+                    user.profilePhoto
+                      ? { uri: user.profilePhoto }
+                      : require("../../assets/images/profile-test.jpg")
+                  }
+                  style={[
+                    styles.profile,
+                    { borderColor: Colors[colorScheme].border }
+                  ]}
+                />
       </View>
           
       <View style = {styles.sectionHeader}>
@@ -124,6 +156,7 @@ welcomeText: {
     fontSize: 26,
     fontWeight: "700",
     marginTop: 2,
+    textAlign: "left",
     
   },
 });

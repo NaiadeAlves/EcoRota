@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -17,6 +17,13 @@ import { router } from "expo-router";
 import { Colors } from "../constants/theme";
 import Header from "../components/header";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from "./contexts/UserContext";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+
+
+
 
 const EditProfile = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -24,6 +31,73 @@ const EditProfile = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { user, setUser } = useUser();
+
+  useEffect(() => {
+  const loadUserData = async () => {
+    try {
+      const storedName = await AsyncStorage.getItem("userName");
+      const storedEmail = await AsyncStorage.getItem("userEmail");
+      const userId = await AsyncStorage.getItem("userId");
+      const storedPhoto = await AsyncStorage.getItem(`profilePhoto_${userId}`);
+      
+    
+      if (storedPhoto) {
+        setUser({ profilePhoto: storedPhoto });
+      }
+
+
+      if (storedName) setName(storedName);
+      if (storedEmail) setEmail(storedEmail);
+
+      console.log("EditProfile: Dados carregados", {
+        name: storedName,
+        email: storedEmail,
+      });
+
+    } catch (error) {
+      console.error("Erro ao carregar dados no EditProfile:", error);
+    }
+  };
+
+  loadUserData();
+}, []);
+
+  // Salva a imagem em uma pasta permanente do app
+const saveImagePermanent = async (uri: string, userId: string | null) => {
+  try {
+    const documentDir = (FileSystem as any).documentDirectory;
+
+    if (!documentDir) {
+      console.log("documentDirectory indisponível");
+      return uri;
+    }
+
+    if (!userId) {
+      console.log("Erro: userId ausente");
+      return uri;
+    }
+
+    const fileName = `profile_${userId}.jpg`;
+    const newPath = documentDir + fileName;
+
+    await FileSystem.copyAsync({
+      from: uri,
+      to: newPath,
+    });
+
+    return newPath;
+
+  } catch (error) {
+    console.log("Erro ao salvar imagem:", error);
+    return uri;
+  }
+};
+
+
+
+
+
   return (
     <KeyboardAvoidingView
       style={[
@@ -60,12 +134,12 @@ const EditProfile = () => {
           </View>
           {/*imagem de perfil*/}
           <Image
-            source={require("../assets/images/profile-test.png")}
-            style={[
-              styles.profile,
-              { borderColor: Colors[colorScheme].border },
-            ]}
-            resizeMode="contain"
+            source={
+              user.profilePhoto
+                ? { uri: user.profilePhoto }
+                : require("../assets/images/profile-test.jpg")
+            }
+            style={[styles.profile, { borderColor: Colors[colorScheme].border }]}
           />
 
           <Pressable
@@ -73,7 +147,42 @@ const EditProfile = () => {
               styles.changePhotoButton,
               { backgroundColor: Colors[colorScheme].button },
             ]}
-            onPress={() => console.log("Alterar foto")}
+            onPress={async () => {
+              const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              if (permission.status !== "granted") {
+                alert("Permissão necessária para acessar suas fotos.");
+                return;
+              }
+
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+              });
+
+              if (!result.canceled) {
+                const uri = result.assets[0].uri;
+
+                const userId = await AsyncStorage.getItem("userId");
+
+                // ⭐ Salva a imagem permanentemente
+                const finalPath = await saveImagePermanent(uri, userId);
+
+                // ⭐ Salva no AsyncStorage
+                await AsyncStorage.setItem(`profilePhoto_${userId}`, finalPath);
+
+                // ⭐ Atualiza o contexto
+                setUser({
+                  ...user,
+                  profilePhoto: finalPath,
+                });
+
+                console.log("Foto permanente salva em:", finalPath);
+              }
+            }}
+
+
           >
             <Text style={styles.changePhotoText}>Mudar foto</Text>
           </Pressable>
@@ -140,13 +249,52 @@ const EditProfile = () => {
           {/*botão que redireciona para a tela principal*/}
           <View>
             <Pressable
-              style={[
-                styles.saveButton,
-                { backgroundColor: Colors[colorScheme].button },
-              ]}
+              style={[styles.saveButton, { backgroundColor: Colors[colorScheme].button }]}
+              onPress={async () => {
+                try {
+                  const token = await AsyncStorage.getItem("userToken");
+                  const userId = await AsyncStorage.getItem("userId");
+
+                  const response = await fetch("http://192.168.3.61:5000/api/users/update", {
+                    method: "PUT",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                      userId,   
+                      name,
+                      email,
+                      password: password.trim() === "" ? undefined : password
+                    })
+                  });
+
+                  const data = await response.json();
+
+                  if (!response.ok) {
+                    console.log("Erro no backend:", data);
+                    return;
+                  }
+
+                  // 🔥 Atualiza no AsyncStorage
+                  await AsyncStorage.setItem("userEmail", email);
+                  await AsyncStorage.setItem("userName", name);
+
+                  setUser({ name, email });
+
+                  console.log("Perfil atualizado com sucesso!");
+                  router.push("/(tabs)/profile");
+
+                } catch (error) {
+                  console.error("Erro ao salvar alterações:", error);
+                }
+              }}
+
+
             >
               <Text style={styles.saveText}>Salvar</Text>
             </Pressable>
+
           </View>
         </View>
       </ScrollView>
