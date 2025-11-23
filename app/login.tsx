@@ -26,7 +26,7 @@ export default function Login() {
   const userEmail = email;
   const [error, setError] = useState("");
   //const BACKEND_URL = "http://192.168.3.61:5000";
-  const BACKEND_URL = "https://impecunious-filterable-tennie.ngrok-free.dev";
+  const BACKEND_URL = "https://ecorota-2.onrender.com";
   const { setUser } = useUser();
 
   const handleLogin = async () => {
