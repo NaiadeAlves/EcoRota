@@ -1,13 +1,25 @@
 import React, { useState } from "react";
-import { Text, View, Button, Image, StyleSheet, useColorScheme, TextInput, KeyboardAvoidingView, ScrollView, Pressable} from "react-native";
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  Text,
+  View,
+  Button,
+  Image,
+  StyleSheet,
+  useColorScheme,
+  TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
+  Pressable,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../constants/theme";
-import Header from "../components/header"
+import Header from "../components/header";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import axios from "axios";
 
-const BACKEND_URL = "http://192.168.3.61:5000";
+//const BACKEND_URL = "http://192.168.3.61:5000";
+const BACKEND_URL = "https://impecunious-filterable-tennie.ngrok-free.dev";
 
 const Register = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -21,111 +33,146 @@ const Register = () => {
   const handleRegister = async () => {
     setErrorMessage("");
     if (password !== confirmPassword) {
-      setErrorMessage("As senhas não coincidem!");
-      return;
-    }
+      setErrorMessage("As senhas não coincidem!");
+      return;
+    }
 
-     // ⬅️ LOG DE VERIFICAÇÃO: Confirma o nome que será enviado
+    //confirma o nome que será enviado
     console.log("Tentando cadastrar usuário. Nome enviado:", name);
 
     try {
-      const res = await axios.post(`${BACKEND_URL}/api/users/register`, {
-        name, // Nome está sendo enviado
-        email,
-        password,
-      });
+      const res = await axios.post(`${BACKEND_URL}/api/users/register`, {
+        name,
+        email,
+        password,
+      });
 
-
-      // Substituímos o alert() por uma navegação direta
-      console.log("Usuário cadastrado com sucesso! Retorno:", res.data);
-      router.push("/login"); // volta para a tela de login
+      console.log("Usuário cadastrado com sucesso! Retorno:", res.data);
+      router.push("/login"); // volta para a tela de login
     } catch (err: any) {
-      const message = err.response?.data?.message || err.message || "Erro desconhecido ao cadastrar.";
-      console.error("Erro ao cadastrar:", message);
-      setErrorMessage(message);
-    }
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Erro desconhecido ao cadastrar.";
+      console.error("Erro ao cadastrar:", message);
+      setErrorMessage(message);
+    }
   };
 
-    return (
-        //ajusta a altura com base no teclado virtual
-        <KeyboardAvoidingView 
-        style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}
-        >
-        
-        
-        <Header/>
+  return (
+    <SafeAreaView
+        style={[
+          styles.container,
+          { backgroundColor: Colors[colorScheme].background },
+        ]}
+      >
+    <KeyboardAvoidingView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
+      <Header />
 
-        <View style={styles.content}>
-            {/*botão de voltar e título da tela*/}
-            <View style = {styles.titleContainer}>
-                <Pressable style={[
-                    styles.backButton,
-                    { borderColor: Colors[colorScheme].border, backgroundColor: Colors[colorScheme].border, }
-                ]} 
-                //volta para login
-                onPress={() => router.push("/login")}>
-                    <Ionicons 
-                        name="arrow-back" 
-                        size={28} 
-                        color={Colors[colorScheme].icon} 
-                    />
-                </Pressable>
-                <Text style={[styles.title, { color: Colors[colorScheme].text }]}>Cadastro</Text>
-            </View>
-
-                <SafeAreaView style = {styles.inputContainer }>
-                    <TextInput
-                    style={[styles.input, { color: Colors[colorScheme].text, borderColor: Colors[colorScheme].border,}]}
-                    onChangeText={setName}
-                    value={name}
-                    placeholder="Digite seu usuário"
-                    placeholderTextColor={Colors[colorScheme].text}
-                    />
-                    <TextInput
-                    style={[styles.input, { color: Colors[colorScheme].text, borderColor: Colors[colorScheme].border,}]}
-                    onChangeText={setEmail}
-                    value={email}
-                    placeholder="Digite seu email"
-                    placeholderTextColor={Colors[colorScheme].text}
-                    />
-                    <TextInput
-                    style={[styles.input, { color: Colors[colorScheme].text, borderColor: Colors[colorScheme].border,}]}
-                    onChangeText={setPassword}
-                    value={password}
-                    placeholder="Digite sua senha"
-                    placeholderTextColor={Colors[colorScheme].text}
-                    secureTextEntry = {true}
-                    />
-                    <TextInput
-                    style={[styles.input, { color: Colors[colorScheme].text, borderColor: Colors[colorScheme].border,}]}
-                    onChangeText={setConfirmPassword}
-                    value={confirmPassword}
-                    placeholder="Confirme sua senha"
-                    placeholderTextColor={Colors[colorScheme].text}
-                    secureTextEntry = {true}
-                    />
-                </SafeAreaView>
-
-            {/*botão que cadastra o usuário*/}
-            <View style = {styles.button}>
-             <Button
-                title="Cadastrar"
-                color={Colors[colorScheme].button}
-                onPress={handleRegister}
-              />
-             </View>
-             <Image
-                source={
-                require ('../assets/images/arte-principal2.png')}
-                style = {styles.photo}
-                resizeMode="contain"
+      <View style={styles.content}>
+        {/*botão de voltar e título da tela*/}
+        <View style={styles.titleContainer}>
+          <Pressable
+            style={[
+              styles.backButton,
+              {
+                borderColor: Colors[colorScheme].border,
+                backgroundColor: Colors[colorScheme].border,
+              },
+            ]}
+            //volta para login
+            onPress={() => router.push("/login")}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={28}
+              color={Colors[colorScheme].icon}
             />
-             
+          </Pressable>
+          <Text style={[styles.title, { color: Colors[colorScheme].text }]}>
+            Cadastro
+          </Text>
         </View>
-            
-        
-        </KeyboardAvoidingView>
-    )
+
+        <SafeAreaView style={styles.inputContainer}>
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: Colors[colorScheme].text,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+            onChangeText={setName}
+            value={name}
+            placeholder="Digite seu usuário"
+            placeholderTextColor={Colors[colorScheme].text}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: Colors[colorScheme].text,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+            onChangeText={setEmail}
+            value={email}
+            placeholder="Digite seu email"
+            placeholderTextColor={Colors[colorScheme].text}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: Colors[colorScheme].text,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+            onChangeText={setPassword}
+            value={password}
+            placeholder="Digite sua senha"
+            placeholderTextColor={Colors[colorScheme].text}
+            secureTextEntry={true}
+          />
+          <TextInput
+            style={[
+              styles.input,
+              {
+                color: Colors[colorScheme].text,
+                borderColor: Colors[colorScheme].border,
+              },
+            ]}
+            onChangeText={setConfirmPassword}
+            value={confirmPassword}
+            placeholder="Confirme sua senha"
+            placeholderTextColor={Colors[colorScheme].text}
+            secureTextEntry={true}
+          />
+        </SafeAreaView>
+
+        {/*botão que cadastra o usuário*/}
+        <View style={styles.button}>
+          <Button
+            title="Cadastrar"
+            color={Colors[colorScheme].button}
+            onPress={handleRegister}
+          />
+        </View>
+        <Image
+          source={require("../assets/images/arte-principal2.png")}
+          style={styles.photo}
+          resizeMode="contain"
+        />
+      </View>
+    </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -139,22 +186,22 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   titleContainer: {
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "space-between", // deixa o botão à esquerda e o título centralizado visualmente
-  width: "80%", // mesma largura dos inputs
-  marginBottom: 30,
-},
-backButton: {
-  padding: 5,
-  borderWidth: 1,
-  borderRadius: 20,
-},
-title: {
-  fontSize: 24,
-  textAlign: "center",
-  flex: 1, // garante centralização do texto
-},
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "80%",
+    marginBottom: 30,
+  },
+  backButton: {
+    padding: 5,
+    borderWidth: 1,
+    borderRadius: 20,
+  },
+  title: {
+    fontSize: 24,
+    textAlign: "center",
+    flex: 1,
+  },
   button: {
     marginTop: 15,
   },
@@ -176,7 +223,6 @@ title: {
     width: "80%",
     alignItems: "center",
   },
-  
 });
 
 export default Register;

@@ -8,11 +8,12 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Image
+  Image,
 } from "react-native";
 import { Colors } from "../../constants/theme";
 import Header from "@/components/header";
 import * as ImagePicker from "expo-image-picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Reward = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -25,7 +26,10 @@ const Reward = () => {
   const handleTransfer = () => {
     const pointsToUse = parseInt(valueToConvert);
     if (!pointsToUse || pointsToUse <= 0) {
-      Alert.alert("⚠️", "Informe uma quantidade válida de pontos para converter.");
+      Alert.alert(
+        "⚠️",
+        "Informe uma quantidade válida de pontos para converter."
+      );
       return;
     }
     if (pointsToUse > points) {
@@ -42,12 +46,13 @@ const Reward = () => {
     );
   };
 
-    // ------ ENVIAR RECICLAGEM ------
+  //enviar reciclagem
   const [photo, setPhoto] = useState<string | null>(null);
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
-
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    null
+  );
 
   // Tirar foto com a câmera
   const handleTakePhoto = async () => {
@@ -81,42 +86,53 @@ const Reward = () => {
       )}, ${location?.lng.toFixed(4)}\nSua solicitação está em análise.`
     );
 
-    // limpar
     setPhoto(null);
     setItemName("");
     setDescription("");
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors[colorScheme].background }}>
+      <Header />
     <ScrollView
       style={{ backgroundColor: Colors[colorScheme].background }}
       showsVerticalScrollIndicator={false}
     >
-      <Header />
 
-      {/* Título */}
       <View style={styles.containerMessage}>
         <Text style={[styles.message, { color: Colors[colorScheme].text }]}>
           Recompensas
         </Text>
       </View>
 
-      {/* ENVIAR RECICLAGEM */}
+      {/* enviar reciclagem */}
       <View style={styles.recycleBox}>
-        <Text style={[styles.sectionTitle, { color: Colors[colorScheme].text }]}>
+        <Text
+          style={[styles.sectionTitle, { color: Colors[colorScheme].text }]}
+        >
           Enviar Reciclagem ♻️
         </Text>
 
         {/* Foto */}
-        <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
-          <Text style={styles.photoButtonText}>
+        <TouchableOpacity
+          style={[
+            styles.photoButton,
+            { backgroundColor: Colors[colorScheme].button }
+          ]}
+          onPress={handleTakePhoto}
+        >
+          <Text
+            style={[
+              styles.photoButtonText,
+              { color: Colors[colorScheme].text }
+            ]}
+          >
             {photo ? "Trocar Foto" : "Adicionar Foto"}
           </Text>
         </TouchableOpacity>
 
-        {photo && (
-          <Image source={{ uri: photo }} style={styles.previewImage} />
-        )}
+
+        {photo && <Image source={{ uri: photo }} style={styles.previewImage} />}
 
         {/* Nome do item */}
         <TextInput
@@ -151,14 +167,15 @@ const Reward = () => {
 
         {/* Enviar */}
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: Colors[colorScheme].button }]}
+          style={[
+            styles.button,
+            { backgroundColor: Colors[colorScheme].button },
+          ]}
           onPress={handleSendRecycling}
         >
-          <Text style={styles.buttonText}>Enviar para Análise</Text>
+          <Text style={[styles.buttonText, { color: Colors[colorScheme].text }]}>Enviar para Análise</Text>
         </TouchableOpacity>
       </View>
-
-      
 
       {/* Card de Pontos */}
       <View
@@ -176,14 +193,18 @@ const Reward = () => {
         <Text style={[styles.PointsValue, { color: Colors[colorScheme].icon }]}>
           {points}
         </Text>
-        <Text style={[styles.conversionInfo, { color: Colors[colorScheme].icon }]}>
+        <Text
+          style={[styles.conversionInfo, { color: Colors[colorScheme].icon }]}
+        >
           100 pontos = R$ 1,00
         </Text>
       </View>
 
       {/* Conversão */}
       <View style={styles.convertBox}>
-        <Text style={[styles.convertLabel, { color: Colors[colorScheme].text }]}>
+        <Text
+          style={[styles.convertLabel, { color: Colors[colorScheme].text }]}
+        >
           Converter pontos em dinheiro
         </Text>
 
@@ -221,7 +242,9 @@ const Reward = () => {
 
       {/* Histórico */}
       <View style={styles.historyBox}>
-        <Text style={[styles.sectionTitle, { color: Colors[colorScheme].text }]}>
+        <Text
+          style={[styles.sectionTitle, { color: Colors[colorScheme].text }]}
+        >
           Histórico de Transferências
         </Text>
 
@@ -235,6 +258,7 @@ const Reward = () => {
 
       <View style={{ height: 50 }} />
     </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -300,7 +324,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     borderWidth: 1,
-    
   },
   textArea: {
     borderWidth: 1.5,

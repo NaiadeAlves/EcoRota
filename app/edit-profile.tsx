@@ -1,29 +1,24 @@
-import React, { useState, useEffect } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system";
+import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
-  Text,
-  View,
-  Button,
   Image,
-  StyleSheet,
-  useColorScheme,
-  TextInput,
   KeyboardAvoidingView,
-  Platform,
-  ScrollView,
   Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  useColorScheme,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
-import { Colors } from "../constants/theme";
 import Header from "../components/header";
-import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUser } from "./contexts/UserContext";
-import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from "expo-file-system";
-
-
-
+import { Colors } from "../constants/theme";
+import { useUser } from "../contexts/UserContext";
 
 const EditProfile = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -34,78 +29,71 @@ const EditProfile = () => {
   const { user, setUser } = useUser();
 
   useEffect(() => {
-  const loadUserData = async () => {
+    const loadUserData = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem("userName");
+        const storedEmail = await AsyncStorage.getItem("userEmail");
+        const userId = await AsyncStorage.getItem("userId");
+        const storedPhoto = await AsyncStorage.getItem(
+          `profilePhoto_${userId}`
+        );
+
+        if (storedPhoto) {
+          setUser({ profilePhoto: storedPhoto });
+        }
+
+        if (storedName) setName(storedName);
+        if (storedEmail) setEmail(storedEmail);
+
+        console.log("EditProfile: Dados carregados", {
+          name: storedName,
+          email: storedEmail,
+        });
+      } catch (error) {
+        console.error("Erro ao carregar dados no EditProfile:", error);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const saveImagePermanent = async (uri: string, userId: string | null) => {
     try {
-      const storedName = await AsyncStorage.getItem("userName");
-      const storedEmail = await AsyncStorage.getItem("userEmail");
-      const userId = await AsyncStorage.getItem("userId");
-      const storedPhoto = await AsyncStorage.getItem(`profilePhoto_${userId}`);
-      
-    
-      if (storedPhoto) {
-        setUser({ profilePhoto: storedPhoto });
+      const documentDir = (FileSystem as any).documentDirectory;
+
+      if (!documentDir) {
+        console.log("documentDirectory indisponível");
+        return uri;
       }
 
+      if (!userId) {
+        console.log("Erro: userId ausente");
+        return uri;
+      }
 
-      if (storedName) setName(storedName);
-      if (storedEmail) setEmail(storedEmail);
+      const fileName = `profile_${userId}.jpg`;
+      const newPath = documentDir + fileName;
 
-      console.log("EditProfile: Dados carregados", {
-        name: storedName,
-        email: storedEmail,
+      await FileSystem.copyAsync({
+        from: uri,
+        to: newPath,
       });
 
+      return newPath;
     } catch (error) {
-      console.error("Erro ao carregar dados no EditProfile:", error);
+      console.log("Erro ao salvar imagem:", error);
+      return uri;
     }
   };
 
-  loadUserData();
-}, []);
-
-  // Salva a imagem em uma pasta permanente do app
-const saveImagePermanent = async (uri: string, userId: string | null) => {
-  try {
-    const documentDir = (FileSystem as any).documentDirectory;
-
-    if (!documentDir) {
-      console.log("documentDirectory indisponível");
-      return uri;
-    }
-
-    if (!userId) {
-      console.log("Erro: userId ausente");
-      return uri;
-    }
-
-    const fileName = `profile_${userId}.jpg`;
-    const newPath = documentDir + fileName;
-
-    await FileSystem.copyAsync({
-      from: uri,
-      to: newPath,
-    });
-
-    return newPath;
-
-  } catch (error) {
-    console.log("Erro ao salvar imagem:", error);
-    return uri;
-  }
-};
-
-
-
-
-
   return (
+    <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
     <KeyboardAvoidingView
       style={[
         styles.container,
         { backgroundColor: Colors[colorScheme].background },
       ]}
     >
-      {/*impede que o conteúdo da tela suba ao ser clicado*/}
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Header />
         {/*botão de voltar e título da tela*/}
@@ -139,7 +127,10 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
                 ? { uri: user.profilePhoto }
                 : require("../assets/images/profile-test.jpg")
             }
-            style={[styles.profile, { borderColor: Colors[colorScheme].border }]}
+            style={[
+              styles.profile,
+              { borderColor: Colors[colorScheme].border },
+            ]}
           />
 
           <Pressable
@@ -148,7 +139,8 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
               { backgroundColor: Colors[colorScheme].button },
             ]}
             onPress={async () => {
-              const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+              const permission =
+                await ImagePicker.requestMediaLibraryPermissionsAsync();
               if (permission.status !== "granted") {
                 alert("Permissão necessária para acessar suas fotos.");
                 return;
@@ -166,13 +158,12 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
 
                 const userId = await AsyncStorage.getItem("userId");
 
-                // ⭐ Salva a imagem permanentemente
+                //Salva a imagem permanentemente
                 const finalPath = await saveImagePermanent(uri, userId);
 
-                // ⭐ Salva no AsyncStorage
+                //Salva no AsyncStorage
                 await AsyncStorage.setItem(`profilePhoto_${userId}`, finalPath);
 
-                // ⭐ Atualiza o contexto
                 setUser({
                   ...user,
                   profilePhoto: finalPath,
@@ -181,8 +172,6 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
                 console.log("Foto permanente salva em:", finalPath);
               }
             }}
-
-
           >
             <Text style={styles.changePhotoText}>Mudar foto</Text>
           </Pressable>
@@ -249,25 +238,31 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
           {/*botão que redireciona para a tela principal*/}
           <View>
             <Pressable
-              style={[styles.saveButton, { backgroundColor: Colors[colorScheme].button }]}
+              style={[
+                styles.saveButton,
+                { backgroundColor: Colors[colorScheme].button },
+              ]}
               onPress={async () => {
                 try {
                   const token = await AsyncStorage.getItem("userToken");
                   const userId = await AsyncStorage.getItem("userId");
 
-                  const response = await fetch("http://192.168.3.61:5000/api/users/update", {
-                    method: "PUT",
-                    headers: {
-                      "Content-Type": "application/json",
-                      "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                      userId,   
-                      name,
-                      email,
-                      password: password.trim() === "" ? undefined : password
-                    })
-                  });
+                  const response = await fetch(
+                    "http://192.168.3.61:5000/api/users/update",
+                    {
+                      method: "PUT",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                      },
+                      body: JSON.stringify({
+                        userId,
+                        name,
+                        email,
+                        password: password.trim() === "" ? undefined : password,
+                      }),
+                    }
+                  );
 
                   const data = await response.json();
 
@@ -276,7 +271,7 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
                     return;
                   }
 
-                  // 🔥 Atualiza no AsyncStorage
+                  // Atualiza no AsyncStorage
                   await AsyncStorage.setItem("userEmail", email);
                   await AsyncStorage.setItem("userName", name);
 
@@ -284,21 +279,18 @@ const saveImagePermanent = async (uri: string, userId: string | null) => {
 
                   console.log("Perfil atualizado com sucesso!");
                   router.push("/(tabs)/profile");
-
                 } catch (error) {
                   console.error("Erro ao salvar alterações:", error);
                 }
               }}
-
-
             >
               <Text style={styles.saveText}>Salvar</Text>
             </Pressable>
-
           </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -324,7 +316,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 50,
   },
-    saveButton: {
+  saveButton: {
     width: "150%",
     alignItems: "center",
     padding: 10,
@@ -363,7 +355,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     position: "absolute",
     left: 40,
-    
   },
   titleContainer: {
     flexDirection: "row",
@@ -374,15 +365,15 @@ const styles = StyleSheet.create({
   },
 
   changePhotoButton: {
-  width: "30%",
-  alignItems: "center",
-  padding: 8,
-  borderRadius: 10,
-  overflow: "hidden",
-  alignSelf: "center",
-  marginBottom: 20,
-  marginTop: -10,
-},
+    width: "30%",
+    alignItems: "center",
+    padding: 8,
+    borderRadius: 10,
+    overflow: "hidden",
+    alignSelf: "center",
+    marginBottom: 20,
+    marginTop: -10,
+  },
   changePhotoText: {
     color: "#fff",
     fontSize: 16,
