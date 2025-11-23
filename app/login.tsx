@@ -17,6 +17,7 @@ import Header from "../components/header";
 import { Colors } from "../constants/theme";
 import { useUser } from "../contexts/UserContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator } from "react-native";
 
 export default function Login() {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -28,10 +29,11 @@ export default function Login() {
   //const BACKEND_URL = "http://192.168.3.61:5000";
   const BACKEND_URL = "https://ecorota-2.onrender.com";
   const { setUser } = useUser();
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     setError("");
-
+    setLoading(true);
     console.log("Tentando conectar ao backend:", BACKEND_URL);
     console.log("Email que será enviado:", email);
 
@@ -83,6 +85,8 @@ export default function Login() {
         "Não foi possível conectar ao servidor. Verifique a URL ou a rede."
       );
       console.error("Erro de conexão/fetch:", err);
+    } finally {
+      setLoading(false); // termina o loading
     }
   };
 
