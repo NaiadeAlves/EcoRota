@@ -107,6 +107,15 @@ export default function Login() {
       {/* Adiciona a mensagem de erro */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+      {/* Loading */}
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color={Colors[colorScheme].button}
+          style={{ marginBottom: 10 }}
+        />
+      )}
+
       <View style={styles.content}>
         <Text style={[styles.title, { color: Colors[colorScheme].text }]}>
           Login

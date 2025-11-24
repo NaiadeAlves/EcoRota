@@ -27,6 +27,7 @@ const EditProfile = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { user, setUser } = useUser();
+  
 
   useEffect(() => {
     const loadUserData = async () => {

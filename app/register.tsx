@@ -17,6 +17,7 @@ import Header from "../components/header";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import axios from "axios";
+import { ActivityIndicator } from "react-native";
 
 //const BACKEND_URL = "http://192.168.3.61:5000";
 const BACKEND_URL = "https://ecorota-2.onrender.com";
@@ -29,6 +30,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
     setErrorMessage("");
@@ -36,6 +38,8 @@ const Register = () => {
       setErrorMessage("As senhas não coincidem!");
       return;
     }
+
+    setLoading(true);
 
     //confirma o nome que será enviado
     console.log("Tentando cadastrar usuário. Nome enviado:", name);
@@ -56,6 +60,8 @@ const Register = () => {
         "Erro desconhecido ao cadastrar.";
       console.error("Erro ao cadastrar:", message);
       setErrorMessage(message);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -73,7 +79,14 @@ const Register = () => {
       ]}
     >
       <Header />
-
+      {/* Loading */}
+            {loading && (
+              <ActivityIndicator
+                size="large"
+                color={Colors[colorScheme].button}
+                style={{ marginBottom: 10 }}
+              />
+            )}
       <View style={styles.content}>
         {/*botão de voltar e título da tela*/}
         <View style={styles.titleContainer}>
