@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/header";
 import { Colors } from "../constants/theme";
 import { useUser } from "../contexts/UserContext";
+import { ActivityIndicator } from "react-native";
 
 const EditProfile = () => {
   const colorScheme = useColorScheme() as "light" | "dark";
@@ -27,6 +28,7 @@ const EditProfile = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { user, setUser } = useUser();
+  const [loading, setLoading] = useState(false);
   
 
   useEffect(() => {
@@ -84,6 +86,8 @@ const EditProfile = () => {
     } catch (error) {
       console.log("Erro ao salvar imagem:", error);
       return uri;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +101,14 @@ const EditProfile = () => {
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Header />
+        {/* Loading */}
+              {loading && (
+                <ActivityIndicator
+                  size="large"
+                  color={Colors[colorScheme].button}
+                  style={{ marginBottom: 10 }}
+                />
+              )}
         {/*botão de voltar e título da tela*/}
         <View style={styles.content}>
           <View style={styles.titleContainer}>
@@ -244,12 +256,13 @@ const EditProfile = () => {
                 { backgroundColor: Colors[colorScheme].button },
               ]}
               onPress={async () => {
+                setLoading(true);
                 try {
                   const token = await AsyncStorage.getItem("userToken");
                   const userId = await AsyncStorage.getItem("userId");
 
                   const response = await fetch(
-                    "http://192.168.3.61:5000/api/users/update",
+                    "https://ecorota-2.onrender.com/api/users/update",
                     {
                       method: "PUT",
                       headers: {
@@ -257,7 +270,7 @@ const EditProfile = () => {
                         Authorization: `Bearer ${token}`,
                       },
                       body: JSON.stringify({
-                        userId,
+                        id: userId,
                         name,
                         email,
                         password: password.trim() === "" ? undefined : password,

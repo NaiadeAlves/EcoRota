@@ -12,6 +12,7 @@ import {
   TextInput,
   useColorScheme,
   View,
+  Platform
 } from "react-native";
 import Header from "../components/header";
 import { Colors } from "../constants/theme";
@@ -98,11 +99,8 @@ export default function Login() {
     ]}
   >
     <KeyboardAvoidingView
-      style={[
-        styles.container,
-        { backgroundColor: Colors[colorScheme].background },
-      ]}
-    >
+  style={styles.container}
+>
       <Header />
       {/* Adiciona a mensagem de erro */}
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
