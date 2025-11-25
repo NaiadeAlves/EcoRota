@@ -23,6 +23,8 @@ O aplicativo permite que os usuários encontrem pontos de coleta para reciclagem
 
 1. Clone o repositório.  
 2. Instale o **Expo Go** no seu celular
-3. No terminal do VSCode, digite:  
+3. No terminal do VSCode, digite:
+   npm install  
+4. Ainda no terminal, digite:
    npx expo start
-4. Aproveite o app!
+6. Leia o qrcode e aproveite o app!
