@@ -87,7 +87,7 @@ export default function Login() {
       );
       console.error("Erro de conexão/fetch:", err);
     } finally {
-      setLoading(false); // termina o loading
+      setLoading(false);
     }
   };
 
@@ -184,12 +184,13 @@ export default function Login() {
         </View>
       </View>
 
-      <Image
+      
+    </KeyboardAvoidingView>
+    <Image
         source={require("../assets/images/arte-principal2.png")}
         style={styles.photo}
         resizeMode="contain"
       />
-    </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

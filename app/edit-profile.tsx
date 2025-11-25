@@ -200,7 +200,7 @@ const EditProfile = () => {
               ]}
               onChangeText={setName}
               value={name}
-              placeholder="Maria"
+              placeholder="Digite seu nome"
               placeholderTextColor={Colors[colorScheme].text}
             />
             <TextInput
@@ -213,7 +213,7 @@ const EditProfile = () => {
               ]}
               onChangeText={setEmail}
               value={email}
-              placeholder="maria123@gmail.com"
+              placeholder="Digite seu email"
               placeholderTextColor={Colors[colorScheme].text}
             />
             <TextInput

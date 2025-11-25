@@ -9,7 +9,6 @@ import {
   Text,
   useColorScheme,
   View,
-  StatusBar,
 } from "react-native";
 import Header from "../../components/header";
 import RecyclableCard from "../../components/recycle-card";

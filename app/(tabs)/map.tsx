@@ -103,7 +103,7 @@ export default function Map() {
           longitude: firstResult.longitude,
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
-        }); // Definir o marcador de busca
+        });
 
         setSearchedLocation({
           latitude: firstResult.latitude,
