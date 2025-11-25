@@ -15,10 +15,7 @@ O aplicativo permite que os usuários encontrem pontos de coleta para reciclagem
 
 - **Frontend:** React Native com Expo  
 - **Backend:** Node.js, Express  
-- **Banco de Dados:** MongoDB Atlas  
-- **Autenticação:** JWT  
-- **Gerenciamento de estado:** Context API  
-- **Outros:** AsyncStorage, Expo Router, Fetch  
+- **Banco de Dados:** MongoDB Atlas 
 
 ---
 
