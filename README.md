@@ -18,7 +18,7 @@ O aplicativo permite que os usuários encontrem pontos de coleta para reciclagem
 - **Banco de Dados:** MongoDB Atlas 
 
 ---
-##Como acessar:
+## Como acessar:
 1. Acesse esse link pelo seu celular: https://expo.dev/accounts/naiade_n/projects/EcoRota/builds/42533d63-df2a-4d8e-9f8a-6504b7857119
 2. Clique em installl e aproveite o app!
 
