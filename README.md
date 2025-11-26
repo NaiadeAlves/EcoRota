@@ -19,7 +19,7 @@ O aplicativo permite que os usuários encontrem pontos de coleta para reciclagem
 
 ---
 ## Como acessar:
-1. Acesse esse link pelo seu celular: https://expo.dev/accounts/naiade_n/projects/EcoRota/builds/42533d63-df2a-4d8e-9f8a-6504b7857119
+1. Acesse esse link pelo seu celular: https://expo.dev/accounts/naiade_n/projects/EcoRota/builds/86e16470-e528-41e3-adea-7495ba5f8aac
 2. Clique em installl e aproveite o app!
 
 ## Outra forma de Acessar 
